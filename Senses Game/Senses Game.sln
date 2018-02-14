@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2017
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senses Game", "Senses Game.csproj", "{86389700-87E3-8DCF-F132-77A00E8CCBA0}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senses Game.Plugins", "Senses Game.Plugins.csproj", "{81E34AA8-CEF3-DA68-8246-0D8C52972E34}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senses Game", "Senses Game.csproj", "{86389700-87E3-8DCF-F132-77A00E8CCBA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Senses Game.Editor.Plugins", "Senses Game.Editor.Plugins.csproj", "{4B43FF42-DFAF-EDFE-F98A-B7CE5C8AEF50}"
 EndProject
@@ -13,14 +13,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{81E34AA8-CEF3-DA68-8246-0D8C52972E34}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{81E34AA8-CEF3-DA68-8246-0D8C52972E34}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{81E34AA8-CEF3-DA68-8246-0D8C52972E34}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{81E34AA8-CEF3-DA68-8246-0D8C52972E34}.Release|Any CPU.Build.0 = Release|Any CPU
+		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{86389700-87E3-8DCF-F132-77A00E8CCBA0}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4B43FF42-DFAF-EDFE-F98A-B7CE5C8AEF50}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B43FF42-DFAF-EDFE-F98A-B7CE5C8AEF50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B43FF42-DFAF-EDFE-F98A-B7CE5C8AEF50}.Release|Any CPU.ActiveCfg = Release|Any CPU
