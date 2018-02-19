@@ -7,15 +7,24 @@ public class SenseSwitcher : MonoBehaviour {
     [SerializeField]
     private Material mSwitchMat;
 
+    [SerializeField]
+    private int mMaxSounds;
+
     private List<GameObject> mObjectRefs;
     private List<Material> mOriginalMats;
 
     private bool mIsSight;
     private Material mActualMat, mOldSkybox;
 
+    private ComputeBuffer mSoundPositions;
+    private ComputeBuffer mSoundRadii;
+    private int mNumSounds;
+    private List<Vector3> mActualRefs;
+
 	// Use this for initialization
 	void Start () {
         mIsSight = true;
+        mNumSounds = 0;
         mActualMat = Material.Instantiate(mSwitchMat);
         mOldSkybox = RenderSettings.skybox;
 
@@ -28,10 +37,27 @@ public class SenseSwitcher : MonoBehaviour {
             mObjectRefs.Add(rend.gameObject);
             mOriginalMats.Add(rend.material);
         }
-	}
-	
-	// Update is called once per frame
-	void Update () {
+
+        Vector3[] soundInit = new Vector3[mMaxSounds];
+        mSoundPositions = new ComputeBuffer(mMaxSounds, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.zero), ComputeBufferType.Default);
+        mSoundPositions.SetData(soundInit);
+
+        float temp = 0;
+        float[] soundRadiiInit = new float[mMaxSounds];
+        mSoundRadii = new ComputeBuffer(mMaxSounds, System.Runtime.InteropServices.Marshal.SizeOf(temp), ComputeBufferType.Default);
+        mSoundRadii.SetData(soundRadiiInit);
+
+        mActualMat.SetBuffer("soundPositions", mSoundPositions);
+        mActualMat.SetBuffer("soundRadii", mSoundRadii);
+        mActualMat.SetInt("numPositions", mNumSounds);
+        mActualRefs = new List<Vector3>();
+
+        mActualRefs.Add(new Vector4(-230.1142f, 6.97f, 0.7f, 1));
+        AddNewSound(30, mActualRefs[0]);
+    }
+
+    // Update is called once per frame
+    void Update () {
         if (Input.GetKeyDown(KeyCode.G))
         {
             mIsSight = !mIsSight;
@@ -57,5 +83,71 @@ public class SenseSwitcher : MonoBehaviour {
                 RenderSettings.skybox = null;
             }
         }
-	}
+
+        Vector3[] soundPos = new Vector3[mMaxSounds];
+        mSoundPositions.GetData(soundPos);
+
+        for (int i = 0; i < mNumSounds; i++)
+        {
+            soundPos[i] = mActualRefs[i];
+        }
+
+        mSoundPositions.SetData(soundPos);
+        mActualMat.SetInt("numPositions", mNumSounds);
+    }
+
+    private void RemoveSound(int index)
+    {
+        float[] soundRadii = new float[mMaxSounds];
+        mSoundRadii.GetData(soundRadii);
+
+        Vector3[] soundPos = new Vector3[mMaxSounds];
+        mSoundPositions.GetData(soundPos);
+
+        soundPos[index] = Vector3.zero;
+        soundRadii[index] = 0;
+
+        mSoundRadii.SetData(soundRadii);
+        mSoundPositions.SetData(soundPos);
+    }
+
+    private int AddNewSound(float radii, Vector3 pos)
+    {
+        if (mNumSounds >= mMaxSounds)
+            return -1;
+
+        float[] soundRadii = new float[mMaxSounds];
+        mSoundRadii.GetData(soundRadii);
+
+        Vector3[] soundPos = new Vector3[mMaxSounds];
+        mSoundPositions.GetData(soundPos);
+
+        int index = -1;
+        for (int i = 0; i < mMaxSounds; i++)
+        {
+            if (soundRadii[i] == 0)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1)
+            return -1;
+
+        soundRadii[index] = radii;
+        soundPos[index] = pos;
+        mNumSounds++;
+
+        mSoundRadii.SetData(soundRadii);
+        mSoundPositions.SetData(soundPos);
+
+        return index;
+    }
+
+    private void OnDestroy()
+    {
+        mSoundPositions.Dispose();
+        mSoundRadii.Dispose();
+    }
 }

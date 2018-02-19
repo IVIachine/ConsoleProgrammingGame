@@ -1,4 +1,6 @@
-﻿Shader "Custom/HearingShader" {
+﻿// Upgrade NOTE: replaced '_Object2World' with 'unity_ObjectToWorld'
+
+Shader "Custom/HearingShader" {
 	Properties {
 		_Color ("Color", Color) = (1,1,1,1)
 		_MainTex ("Albedo (RGB)", 2D) = "white" {}
@@ -20,6 +22,10 @@
 		#pragma target 3.0
 
 		sampler2D _MainTex;
+		StructuredBuffer<float4> soundPositions;
+		StructuredBuffer<float> soundRadii;
+
+		int numPositions;
 
 		struct appdata
 		{
@@ -50,6 +56,19 @@
 		{
 			fixed4 col;
 			col = float4(0, 0, 0, 1);
+
+			for (int i = 0; i < numPositions; i++)
+			{
+				float3 pos = mul(unity_ObjectToWorld, IN.oldPos).xyz;
+				float dist = distance(pos, soundPositions[i]);
+
+				if (dist < soundRadii[i])
+				{
+					col = float4(1, 1, 1, 1);
+					break;
+				}
+			}
+			
 			return col;
 		}
 		ENDCG
