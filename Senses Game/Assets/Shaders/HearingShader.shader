@@ -7,11 +7,10 @@ Shader "Custom/HearingShader" {
 	}
 
 	SubShader {
+		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
 		Blend SrcAlpha OneMinusSrcAlpha
-		Tags { "RenderType"="Transparent" }
-		LOD 200
 
-		Pass
+	Pass
 	{
 		CGPROGRAM
 		// Physically based Standard lighting model, and enable shadows on all light types
@@ -55,7 +54,8 @@ Shader "Custom/HearingShader" {
 		fixed4 frag(v2f IN) : SV_Target
 		{
 			fixed4 col;
-			col = float4(0, 0, 0, 1);
+			col = float4(0, 0, 0, 0);
+			float4 colTemp = tex2D(_MainTex, IN.uv);
 
 			for (int i = 0; i < numPositions; i++)
 			{

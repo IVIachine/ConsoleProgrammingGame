@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 
 public class SenseSwitcher : MonoBehaviour {
 
@@ -9,6 +10,12 @@ public class SenseSwitcher : MonoBehaviour {
 
     [SerializeField]
     private int mMaxSounds;
+
+    [SerializeField]
+    private GameObject mSoundPrefab;
+
+    [SerializeField]
+    private GameObject mPlayerRef;
 
     private List<GameObject> mObjectRefs;
     private List<Material> mOriginalMats;
@@ -19,10 +26,11 @@ public class SenseSwitcher : MonoBehaviour {
     private ComputeBuffer mSoundPositions;
     private ComputeBuffer mSoundRadii;
     private int mNumSounds;
-    private List<Vector3> mActualRefs;
+    private GameObject[] mCurrentSounds;
 
 	// Use this for initialization
 	void Start () {
+        mCurrentSounds = new GameObject[mMaxSounds];
         mIsSight = true;
         mNumSounds = 0;
         mActualMat = Material.Instantiate(mSwitchMat);
@@ -50,10 +58,6 @@ public class SenseSwitcher : MonoBehaviour {
         mActualMat.SetBuffer("soundPositions", mSoundPositions);
         mActualMat.SetBuffer("soundRadii", mSoundRadii);
         mActualMat.SetInt("numPositions", mNumSounds);
-        mActualRefs = new List<Vector3>();
-
-        mActualRefs.Add(new Vector4(-230.1142f, 6.97f, 0.7f, 1));
-        AddNewSound(30, mActualRefs[0]);
     }
 
     // Update is called once per frame
@@ -89,14 +93,14 @@ public class SenseSwitcher : MonoBehaviour {
 
         for (int i = 0; i < mNumSounds; i++)
         {
-            soundPos[i] = mActualRefs[i];
+            soundPos[i] = mCurrentSounds[i].transform.position;
         }
 
         mSoundPositions.SetData(soundPos);
         mActualMat.SetInt("numPositions", mNumSounds);
     }
 
-    private void RemoveSound(int index)
+    public  void RemoveSound(int index)
     {
         float[] soundRadii = new float[mMaxSounds];
         mSoundRadii.GetData(soundRadii);
@@ -109,9 +113,12 @@ public class SenseSwitcher : MonoBehaviour {
 
         mSoundRadii.SetData(soundRadii);
         mSoundPositions.SetData(soundPos);
+
+        Destroy(mCurrentSounds[index]);
+        mNumSounds--;
     }
 
-    private int AddNewSound(float radii, Vector3 pos)
+    public int AddNewSound(float radii, Vector3 pos)
     {
         if (mNumSounds >= mMaxSounds)
             return -1;
@@ -141,6 +148,14 @@ public class SenseSwitcher : MonoBehaviour {
 
         mSoundRadii.SetData(soundRadii);
         mSoundPositions.SetData(soundPos);
+
+        mCurrentSounds[index] = GameObject.Instantiate(mSoundPrefab, pos, Quaternion.identity);
+        NavMeshPath path = new NavMeshPath();
+        if (mCurrentSounds[index].GetComponent<NavMeshAgent>().CalculatePath(mPlayerRef.transform.position, path))
+        {
+            mCurrentSounds[index].GetComponent<NavMeshAgent>().SetPath(path);
+            mCurrentSounds[index].AddComponent<SenseMover>().beginMovement(index, this.gameObject);
+        }
 
         return index;
     }

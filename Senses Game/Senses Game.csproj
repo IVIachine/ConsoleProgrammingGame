@@ -226,6 +226,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\BaseCharacterController.cs" />
+    <Compile Include="Assets\Scripts\PulseNoiseGen.cs" />
+    <Compile Include="Assets\Scripts\SenseMover.cs" />
     <Compile Include="Assets\Scripts\SenseSwitcher.cs" />
   </ItemGroup>
   <ItemGroup>
