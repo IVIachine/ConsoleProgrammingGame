@@ -1,0 +1,9 @@
+# Builds
+*.apk
+*.unitypackage
+/Senses Game/Library
+/Senses Game/Temp
+/Senses Game/Library
+/Senses Game/Debug
+/Senses Game/*.sln
+/Senses Game/*.csproj
