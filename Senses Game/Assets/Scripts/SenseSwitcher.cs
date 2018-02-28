@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -100,8 +101,21 @@ public class SenseSwitcher : MonoBehaviour {
         mActualMat.SetInt("numPositions", mNumSounds);
     }
 
-    public  void RemoveSound(int index)
+    public  void RemoveSound(GameObject reference)
     {
+        int index = -1;
+        for (int i = 0; i < mCurrentSounds.Length; i++)
+        {
+            if(mCurrentSounds[i] == reference)
+            {
+                index = i;
+                break;
+            }
+        }
+
+        if (index == -1)
+            return;
+
         float[] soundRadii = new float[mMaxSounds];
         mSoundRadii.GetData(soundRadii);
 
@@ -115,6 +129,23 @@ public class SenseSwitcher : MonoBehaviour {
         mSoundPositions.SetData(soundPos);
 
         Destroy(mCurrentSounds[index]);
+
+        float[] radiiTemp = new float[mMaxSounds];
+        Array.Copy(soundRadii, radiiTemp, mMaxSounds);
+        Array.Sort(radiiTemp, soundPos);
+
+        float[] radiiTemp2 = new float[mMaxSounds];
+        Array.Copy(soundRadii, radiiTemp2, mMaxSounds);
+        Array.Sort(radiiTemp2, mCurrentSounds);
+
+        Array.Sort(soundRadii);
+
+        Array.Reverse(soundRadii);
+        Array.Reverse(soundPos);
+        Array.Reverse(mCurrentSounds);
+
+        mSoundPositions.SetData(soundPos);
+        mSoundRadii.SetData(soundRadii);
         mNumSounds--;
     }
 

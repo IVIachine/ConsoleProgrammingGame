@@ -64,7 +64,8 @@ Shader "Custom/HearingShader" {
 
 				if (dist < soundRadii[i])
 				{
-					col = float4(1, 1, 1, 1);
+					float a = 1 - (dist / soundRadii[i]);
+					col = float4(a, a, a, 1);
 					break;
 				}
 			}

@@ -17,6 +17,6 @@ public class SenseMover : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(GetComponent<NavMeshAgent>().remainingDistance <= 0)
-            mSenseSwitcherRef.GetComponent<SenseSwitcher>().RemoveSound(mIndex);
+            mSenseSwitcherRef.GetComponent<SenseSwitcher>().RemoveSound(gameObject);
 	}
 }
