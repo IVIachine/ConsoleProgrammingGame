@@ -18,6 +18,9 @@ public class SenseSwitcher : MonoBehaviour {
     [SerializeField]
     private GameObject mPlayerRef;
 
+    [SerializeField]
+    private float mUpdateFrequency;
+
     private List<GameObject> mObjectRefs;
     private List<Material> mOriginalMats;
 
@@ -185,7 +188,7 @@ public class SenseSwitcher : MonoBehaviour {
         if (mCurrentSounds[index].GetComponent<NavMeshAgent>().CalculatePath(mPlayerRef.transform.position, path))
         {
             mCurrentSounds[index].GetComponent<NavMeshAgent>().SetPath(path);
-            mCurrentSounds[index].AddComponent<SenseMover>().beginMovement(index, this.gameObject);
+            mCurrentSounds[index].AddComponent<SenseMover>().beginMovement(index, this.gameObject, mPlayerRef, mUpdateFrequency);
         }
 
         return index;

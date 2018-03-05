@@ -8,7 +8,7 @@ Shader "Custom/HearingShader" {
 
 	SubShader {
 		Tags{ "Queue" = "Transparent" "RenderType" = "Transparent" }
-		Blend SrcAlpha OneMinusSrcAlpha
+		Blend SrcAlpha OneMinusSrcColor
 
 	Pass
 	{
@@ -65,7 +65,7 @@ Shader "Custom/HearingShader" {
 				if (dist < soundRadii[i])
 				{
 					float a = 1 - (dist / soundRadii[i]);
-					col = float4(a, a, a, 1);
+					col = float4(1, 1, 1, a);
 					break;
 				}
 			}
