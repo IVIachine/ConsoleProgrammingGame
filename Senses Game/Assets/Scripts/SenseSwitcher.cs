@@ -22,7 +22,7 @@ public class SenseSwitcher : MonoBehaviour {
     private float mUpdateFrequency;
 
     private List<GameObject> mObjectRefs;
-    private List<Material> mOriginalMats;
+    private List<List<Material>> mOriginalMats;
 
     private bool mIsSight;
     private Material mActualMat, mOldSkybox;
@@ -41,14 +41,32 @@ public class SenseSwitcher : MonoBehaviour {
         mOldSkybox = RenderSettings.skybox;
 
         mObjectRefs = new List<GameObject>();
-        mOriginalMats = new List<Material>();
+        mOriginalMats = new List<List<Material>>();
         MeshRenderer[] renderers = GameObject.FindObjectsOfType<MeshRenderer>();
 
         foreach(MeshRenderer rend in renderers)
         {
             mObjectRefs.Add(rend.gameObject);
-            mOriginalMats.Add(rend.material);
+
+            List<Material> oldMats = new List<Material>();
+            foreach(Material mat in rend.materials)
+                oldMats.Add(mat);
+
+            mOriginalMats.Add(oldMats);
         }
+
+        SkinnedMeshRenderer[] skinnedRenderers = GameObject.FindObjectsOfType<SkinnedMeshRenderer>();
+        foreach (SkinnedMeshRenderer rend in skinnedRenderers)
+        {
+            mObjectRefs.Add(rend.gameObject);
+
+            List<Material> oldMats = new List<Material>();
+            foreach (Material mat in rend.materials)
+                oldMats.Add(mat);
+
+            mOriginalMats.Add(oldMats);
+        }
+
 
         Vector3[] soundInit = new Vector3[mMaxSounds];
         mSoundPositions = new ComputeBuffer(mMaxSounds, System.Runtime.InteropServices.Marshal.SizeOf(Vector3.zero), ComputeBufferType.Default);
@@ -75,7 +93,26 @@ public class SenseSwitcher : MonoBehaviour {
                 int index = 0;
                 foreach(GameObject obj in mObjectRefs)
                 {
-                    obj.GetComponent<MeshRenderer>().material = mOriginalMats[index];
+                    if (obj.GetComponent<MeshRenderer>())
+                    {
+                        Material[] mats = obj.GetComponent<MeshRenderer>().materials;
+                        for (int i = 0; i < mOriginalMats[index].Count; i++)
+                        {
+                            mats[i] = mOriginalMats[index][i];
+                        }
+
+                        obj.GetComponent<MeshRenderer>().materials = mats;
+                    }
+                    else if (obj.GetComponent<SkinnedMeshRenderer>())
+                    {
+                        Material[] mats = obj.GetComponent<SkinnedMeshRenderer>().materials;
+                        for (int i = 0; i < mOriginalMats[index].Count; i++)
+                        {
+                            mats[i] = mOriginalMats[index][i];
+                        }
+
+                        obj.GetComponent<SkinnedMeshRenderer>().materials = mats;
+                    }
                     index++;
                 }
 
@@ -83,9 +120,31 @@ public class SenseSwitcher : MonoBehaviour {
             }
             else
             {
+                int index = 0;
                 foreach (GameObject obj in mObjectRefs)
                 {
-                    obj.GetComponent<MeshRenderer>().material = mActualMat;
+                    if (obj.GetComponent<MeshRenderer>())
+                    {
+                        Material[] mats = obj.GetComponent<MeshRenderer>().materials;
+                        for (int i = 0; i < mOriginalMats[index].Count; i++)
+                        {
+                            mats[i] = mActualMat;
+                        }
+
+                        obj.GetComponent<MeshRenderer>().materials = mats;
+                    }
+                    else if (obj.GetComponent<SkinnedMeshRenderer>())
+                    {
+                        Material[] mats = obj.GetComponent<SkinnedMeshRenderer>().materials;
+                        for (int i = 0; i < mOriginalMats[index].Count; i++)
+                        {
+                            mats[i] = mActualMat;
+                        }
+
+                        obj.GetComponent<SkinnedMeshRenderer>().materials = mats;
+                    }
+
+                    index++;
                 }
 
                 RenderSettings.skybox = null;
