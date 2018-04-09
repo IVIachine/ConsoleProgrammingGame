@@ -15,7 +15,8 @@ public class PulseNoiseGen : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        mHasPlayed = false;
+        mSenseSwitchObj = GameObject.Find("SenseManager");
+        PlaySound();
     }
 
     // Update is called once per frame
