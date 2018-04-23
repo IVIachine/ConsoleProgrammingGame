@@ -29,6 +29,8 @@ public class SenseSwitcher : MonoBehaviour {
 
     private ComputeBuffer mSoundPositions;
     private ComputeBuffer mSoundRadii;
+    private ComputeBuffer mReds;
+
     private int mNumSounds;
     private GameObject[] mCurrentSounds;
 
@@ -77,8 +79,15 @@ public class SenseSwitcher : MonoBehaviour {
         mSoundRadii = new ComputeBuffer(mMaxSounds, System.Runtime.InteropServices.Marshal.SizeOf(temp), ComputeBufferType.Default);
         mSoundRadii.SetData(soundRadiiInit);
 
+        int temp2 = 0;
+        int[] mRedsInitBuff = new int[mMaxSounds];
+        mReds = new ComputeBuffer(mMaxSounds, System.Runtime.InteropServices.Marshal.SizeOf(temp2), ComputeBufferType.Default);
+        mReds.SetData(mRedsInitBuff);
+
         mActualMat.SetBuffer("soundPositions", mSoundPositions);
         mActualMat.SetBuffer("soundRadii", mSoundRadii);
+        mActualMat.SetBuffer("redList", mReds);
+
         mActualMat.SetInt("numPositions", mNumSounds);
     }
 
@@ -184,11 +193,16 @@ public class SenseSwitcher : MonoBehaviour {
         Vector3[] soundPos = new Vector3[mMaxSounds];
         mSoundPositions.GetData(soundPos);
 
+        int[] reds = new int[mMaxSounds];
+        mReds.GetData(reds);
+
         soundPos[index] = Vector3.zero;
         soundRadii[index] = 0;
+        reds[index] = 0;
 
         mSoundRadii.SetData(soundRadii);
         mSoundPositions.SetData(soundPos);
+        mReds.SetData(reds);
 
         Destroy(mCurrentSounds[index]);
 
@@ -198,16 +212,24 @@ public class SenseSwitcher : MonoBehaviour {
 
         float[] radiiTemp2 = new float[mMaxSounds];
         Array.Copy(soundRadii, radiiTemp2, mMaxSounds);
+
+        float[] radiiTemp3 = new float[mMaxSounds];
+        Array.Copy(soundRadii, radiiTemp3, mMaxSounds);
+
+        Array.Sort(radiiTemp3, reds);
         Array.Sort(radiiTemp2, mCurrentSounds);
 
         Array.Sort(soundRadii);
 
+        Array.Reverse(reds);
         Array.Reverse(soundRadii);
         Array.Reverse(soundPos);
         Array.Reverse(mCurrentSounds);
 
         mSoundPositions.SetData(soundPos);
         mSoundRadii.SetData(soundRadii);
+        mReds.SetData(reds);
+
         mNumSounds--;
     }
 
@@ -221,6 +243,9 @@ public class SenseSwitcher : MonoBehaviour {
 
         Vector3[] soundPos = new Vector3[mMaxSounds];
         mSoundPositions.GetData(soundPos);
+
+        int[] reds = new int[mMaxSounds];
+        mReds.GetData(reds);
 
         int index = -1;
         for (int i = 0; i < mMaxSounds; i++)
@@ -237,20 +262,32 @@ public class SenseSwitcher : MonoBehaviour {
 
         soundRadii[index] = radii;
         soundPos[index] = pos;
+        reds[index] = 0;
         mNumSounds++;
 
         mSoundRadii.SetData(soundRadii);
         mSoundPositions.SetData(soundPos);
+        mReds.SetData(reds);
 
         mCurrentSounds[index] = GameObject.Instantiate(mSoundPrefab, pos, Quaternion.identity);
         NavMeshPath path = new NavMeshPath();
         if (mCurrentSounds[index].GetComponent<NavMeshAgent>().CalculatePath(mPlayerRef.transform.position, path))
         {
             mCurrentSounds[index].GetComponent<NavMeshAgent>().SetPath(path);
-            mCurrentSounds[index].AddComponent<SenseMover>().beginMovement(index, this.gameObject, mPlayerRef, mUpdateFrequency);
+            mCurrentSounds[index].AddComponent<SenseMover>().beginMovement(index, this.gameObject, mPlayerRef, mUpdateFrequency, radii);
         }
 
         return index;
+    }
+
+    public void setCol(int index, int isRed)
+    {
+        int[] reds = new int[mMaxSounds];
+        mReds.GetData(reds);
+
+        reds[index] = isRed;
+
+        mReds.SetData(reds);
     }
 
     private void OnDestroy()

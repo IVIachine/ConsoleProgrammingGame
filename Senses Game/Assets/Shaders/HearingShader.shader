@@ -16,13 +16,13 @@ Shader "Custom/HearingShader" {
 		// Physically based Standard lighting model, and enable shadows on all light types
 		#pragma vertex vert
 		#pragma fragment frag
-
 		// Use shader model 3.0 target, to get nicer looking lighting
 		#pragma target 3.0
 
 		sampler2D _MainTex;
 		StructuredBuffer<float4> soundPositions;
 		StructuredBuffer<float> soundRadii;
+		StructuredBuffer<int> redList;
 
 		int numPositions;
 
@@ -65,8 +65,14 @@ Shader "Custom/HearingShader" {
 				if (dist < soundRadii[i])
 				{
 					float a = 1 - (dist / soundRadii[i]);
+
+					if (redList[i] == 1)
+					{
+						col = float4(1, 0, 0, a);
+						break;
+					}
+
 					col = float4(1, 1, 1, a);
-					break;
 				}
 			}
 			
