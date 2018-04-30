@@ -27,7 +27,7 @@ public class SenseMover : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GetComponent<NavMeshAgent>().remainingDistance <= .025f)
+        if (GetComponent<NavMeshAgent>().remainingDistance <= .05f)
             mSenseSwitcherRef.GetComponent<SenseSwitcher>().RemoveSound(gameObject);
 
         AIPatrolScript[] patrolAI = GameObject.FindObjectsOfType<AIPatrolScript>();
@@ -46,7 +46,7 @@ public class SenseMover : MonoBehaviour
 
         if(col != mLastCol)
         {
-            mSenseSwitcherRef.GetComponent<SenseSwitcher>().setCol(mIndex, col);
+            mSenseSwitcherRef.GetComponent<SenseSwitcher>().setCol(gameObject, col);
         }
 
         mLastCol = col;

@@ -280,13 +280,25 @@ public class SenseSwitcher : MonoBehaviour {
         return index;
     }
 
-    public void setCol(int index, int isRed)
+    public void setCol(GameObject objRef, int isRed)
     {
+        int index = -1;
         int[] reds = new int[mMaxSounds];
         mReds.GetData(reds);
 
-        reds[index] = isRed;
+        for (int i = 0; i < mCurrentSounds.Length; i++)
+        {
+            if (mCurrentSounds[i] == objRef)
+            {
+                index = i;
+                break;
+            }
+        }
 
+        if (index == -1)
+            return;
+
+        reds[index] = isRed;
         mReds.SetData(reds);
     }
 
