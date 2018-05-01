@@ -38,10 +38,6 @@ public class SenseMover : MonoBehaviour
             {
                 col = 1;
             }
-            else
-            {
-                col = 0;
-            }
         }
 
         if(col != mLastCol)
