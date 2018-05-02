@@ -14,6 +14,9 @@ public class AIPatrolScript : MonoBehaviour
     [SerializeField]
     private float mWaitTime, mSeeDistance;
 
+    [SerializeField]
+    private LayerMask mCheckMask;
+
     private float mCurrentWait;
     private int mCurrentIndex;
     private bool mPathfinding;
@@ -64,10 +67,18 @@ public class AIPatrolScript : MonoBehaviour
 
     private bool SeesPlayer()
     {
-        Vector3 pos = GetComponent<Camera>().WorldToViewportPoint(mPlayer.transform.position);
-        if (!(pos.x > 0 && pos.x < 1 && pos.y > 0 && pos.y < 1 && pos.z > 0) || 
+        Vector3 pos = transform.Find("Cam").GetComponent<Camera>().WorldToViewportPoint(mPlayer.transform.position);
+        if (!(pos.x > 0 && pos.x < 1 && pos.y > 0 && pos.y < 1 && pos.z > 0) ||
             Vector3.Distance(mPlayer.transform.position, transform.position) > mSeeDistance)
             return false;
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.Find("Cam").position, (mPlayer.transform.position - transform.Find("Cam").position).normalized,
+            out hit, Vector3.Distance(mPlayer.transform.position, transform.Find("Cam").position), mCheckMask))
+        {
+            if (hit.transform.gameObject != mPlayer)
+                return false;
+        }
 
         return true;
     }
